@@ -5,22 +5,20 @@ system_serial=`system_profiler SPHardwareDataType | awk '/Serial/ {print $4}'`
 loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 user_id=`id -u`
 user_name=`id -un $user_id`
-logfile=/var/log/jamf/.log
-exec > $logfile 2>&1
 
 # open SplashBuddy app
 su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
 
 # Setting ComputerName
-echo "=================================================================================="
+echo "==================================================================================" >> /var/log/jamf.log
 echo "Setting computer name to serial number..."
 jamf setComputerName -name $system_serial
-echo "=================================================================================="
+echo "==================================================================================" >> /var/log/jamf.log
 
-echo "=================================================================================="
+echo "==================================================================================" >> /var/log/jamf.log
 echo "Creating sucadmin..."
 jamf policy -event DEPMakeSucadmin
-echo "=================================================================================="
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Start basic device setup
 # This policy runs the following triggers for the following effects:
@@ -52,8 +50,12 @@ echo "==========================================================================
 echo "=================================================================================="
 echo "Checking if SonicWall installed from the App Store..."
 if [ ! -d /Applications/SonicWall\ Mobile\ Connect.app ];
-	then jamf policy -event SonicWall && echo "App Store failed/. Installing from JSS..."
-	else echo "SonicWall installed from App Store. Skipping JSS policy..."
+	then echo "App Store failed. Installing from JSS..." && jamf policy -event SonicWall 
+	else
+		echo "Installing SonicWall_Mobile_Connect_VPP-v1.pkg"
+		echo "Actually, SonicWall was already installed."
+		echo "Sometimes things work correctly :) Skipping JSS policy..."
+		echo "Successfully installed SonicWall_Mobile_Connect_VPP-v1.pkg"
 	fi
 echo "=================================================================================="
 
@@ -96,7 +98,7 @@ echo "==========================================================================
 
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "=================================================================================="
-echo "Verifying app installs and creating Staff High Sierra token and..."
+echo "Verifying app installs and creating Staff High Sierra token and running recon..."
 sh /usr/local/bin/jss/DEP-install-verification.sh
 jamf policy -event DEPconfigstaffhighsierra
 echo "=================================================================================="
