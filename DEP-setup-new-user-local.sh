@@ -14,6 +14,7 @@ su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBudd
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Setting computer name to serial number..." >> /var/log/jamf.log
 jamf setComputerName -name $system_serial
+sleep 2
 echo "Computer renamed to $hn" >> /var/log/jamf.log
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -58,7 +59,7 @@ JavaVersion=`defaults read /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/C
 		echo "Flash $FlashVersion installed successfully..." >> /var/log/jamf.log
 			else echo "Flash not installed..." >> /var/log/jamf.log
 		fi
-		if [ -f "/Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/Contents/enabled.plist" ]; then
+	if [ -f "/Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/Contents/enabled.plist" ]; then
 			echo "$JavaVersion installed successfully..." >> /var/log/jamf.log
 				else echo "Java not installed..." >> /var/log/jamf.log
 			fi	
@@ -66,19 +67,49 @@ echo "==========================================================================
 
 # Installing Papercut Client
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing Java and Flash..." >> /var/log/jamf.log
+echo "Installing Papercut Client..." >> /var/log/jamf.log
 jamf policy -event PCClient
+PCCVersion=`defaults read /Applications/PCClient.app/Contents/Info CFBundleShortVersionString`
+if [ -f "/Applications/PCClient.app/Contents/Info CFBundleShortVersionString.plist" ]; then
+	echo "PCClient $PCCVersion installed successfully..." >> /var/log/jamf.log
+		else echo "PCClient not installed..." >> /var/log/jamf.log
+	fi
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Preparing Share Drive
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Installing Shared Drive dependencies..." >> /var/log/jamf.log
 jamf policy -event SharedDrive
+if [ -f "/Library/Widgets/Zidget.wdgt/Contents/Info.plist" ]; then
+	echo "Zidget installed successfully..." >> /var/log/jamf.log
+		else echo "Zidget not installed..." >> /var/log/jamf.log
+fi
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing BlueJeans
+echo "==================================================================================" >> /var/log/jamf.log
 jamf policy -event BlueJeans
+BJVersion=`defaults read /Applications/Blue\ Jeans.app/Contents/Info CFBundleShortVersionString`
+if [ -f "/Applications/Blue\ Jeans.app/Contents/Info CFBundleShortVersionString.plist" ]; then
+	echo "Blue Jeans installed successfully..." >> /var/log/jamf.log
+		else echo "Blue Jeans not installed..." >> /var/log/jamf.log
+fi
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Creating 'Last Imaged' and 'Image Config' tokens
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Creating Staff High Sierra token..." >> /var/log/jamf.log
 jamf policy -event configstaffhighsierra
+jamf recon
+echo "==================================================================================" >> /var/log/jamf.log
 
-# Preparing for Reboot
+# Verifying app installs
+
+
+# Opening SA Okta in Safari, then set Chrome as default browser
+open -a "Safari" https://successacademies.okta.com
+sleep 1
+jamf policy ChromeDefault
 
 # Quit SplashBuddy if still running
 if [[ $(pgrep SplashBuddy) ]]; then
