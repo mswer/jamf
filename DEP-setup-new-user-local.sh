@@ -5,6 +5,21 @@ system_serial=`system_profiler SPHardwareDataType | awk '/Serial/ {print $4}'`
 loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 user_id=`id -u`
 user_name=`id -un $user_id`
+baduser1="_mbsetupuser"
+baduser2="loginwindow"
+
+# Don't start setting the device up until there's a user logged in
+if [ $loggedInUser == "$baduser1" ] || [ $loggedInUser == "$baduser2" ]
+	then
+		while [ $loggedInUser == $baduser1 ] || [ $loggedInUser == $baduser2 ] 
+		do
+			echo "User not logged in yet. Waiting..." >> /var/log/jamf.log
+			sleep 5;
+			done
+			echo "User $loggedInUser is finally logged in. Starting device setup..." >> /var/log/jamf.log
+	else
+		echo "User $loggedInUser is already logged in. Starting device setup..." >> /var/log/jamf.log
+	fi
 
 # open SplashBuddy app
 su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
@@ -20,6 +35,11 @@ echo "Creating sucadmin..." >> /var/log/jamf.log
 jamf policy -event DEPMakeSucadmin
 echo "==================================================================================" >> /var/log/jamf.log
 
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Opening Safari for later password reset Okta" >> /var/log/jamf.log
+su $loggedInUser -c 'open -a /Applications/Safari.app'
+echo "==================================================================================" >> /var/log/jamf.log
+
 # Start basic device setup
 # This policy runs the following triggers for the following effects:
 # wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), UptimeReminder (installs
@@ -27,13 +47,15 @@ echo "==========================================================================
 # (sets firmware password), EnableLocation (enables location services), SetTimeServer
 # (sets 3 NTP time servers), sucadminprofile (sets sucadmin profile picture)
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Opening Safari to Okta & installed SA device customization policies..." >> /var/log/jamf.log
-osascript -e 'Tell app "Safari" to open location "https://successacademies.okta.com"'
+echo "Running SA device customization policies..." >> /var/log/jamf.log
 jamf policy -event SystemSettings
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Opening Safari to Okta for password reset
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Ok, time for Okta password reset now..." >> /var/log/jamf.log
 jamf policy -event Okta
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Finder FUT policies
 echo "==================================================================================" >> /var/log/jamf.log
@@ -99,8 +121,7 @@ echo "==========================================================================
 
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Verifying app installs and creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
-sh /usr/local/bin/jss/DEP-install-verification.sh
+echo "Creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
 jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -110,16 +131,31 @@ if [[ $(pgrep SplashBuddy) ]]; then
 fi
 
 # we are done, so delete SplashBuddy + new user setup script
-echo "Deleting device setup files..." >> /var/log/jamf.log
+echo "Deleting SplashBuddy files..." >> /var/log/jamf.log
 rm -rf '/Library/Application Support/SplashBuddy'
 rm /Library/Preferences/io.fti.SplashBuddy.plist
 rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
-rm /usr/local/bin/jss/DEP-setup-new-user.sh
-rm /usr/local/bin/jss/DEP-start-setup.sh
-rm /usr/local/bin/jss/DEP-install-verification.sh
 
-# Telling user device setup is complete
-echo "Device setup complete. Notifying user..." >> /var/log/jamf.log
-sh /usr/local/bin/jss/DEP-setup-complete.sh
+# Script prompting user to restart if Okta password reset is complete
+
+/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType hud -title "Alert" -heading "Device Setup Complete ✅" -description "Your computer has been successfully prepared! To finalize setup, please restart now.
+
+If you're a new hire, please complete your SA password setup at https://okta.successacademies.org if you haven't already, and then restart your computer.
+
+Select 'Restart Now' to close all programs and restart immediately.
+Select 'Restart Later' to complete device setup later."  -button1 "Restart now" -button2 "Restart later" -defaultButton 1 -cancelButton 2 -alignDescription left -alignHeading left
+
+# Take action based on exit code
+if [ $? -eq 0 ]
+then
+	echo "User indicated Okta setup complete. Rebooting..." >> /var/log/jamf.log
+    if [[ $(pgrep Safari) ]]; then
+		pkill Safari
+	fi
+	sleep 1
+	sudo jamf policy -event DEPReboot
+else
+	echo "User opted out of new device setup reboot. Exiting..." >> /var/log/jamf.log
+fi
 
 exit 0
