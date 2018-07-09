@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Define serial to rename computer
+# Define script variables
 system_serial=`system_profiler SPHardwareDataType | awk '/Serial/ {print $4}'`
-
-# identify logged-in user
 loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+user_id=`id -u`
+user_name=`id -un $user_id`
 
 # open SplashBuddy app
 su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
@@ -12,8 +12,11 @@ su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBudd
 # Setting ComputerName
 jamf setComputerName -name $system_serial
 
-# Basic user + admin OS settings
+# Check to confirm current user is not the setup user, then start basic user + admin OS settings
 jamf policy -event SystemSettings
+
+# Finder FUT policies
+jamf policy -event FinderDEP
 
 # Installing Apple Enterprise Connect
 jamf policy -event EnterpriseConnect
@@ -43,7 +46,7 @@ if [[ $(pgrep SplashBuddy) ]]; then
 	pkill SplashBuddy
 fi
 
-# we are done, so delete SplashBuddy
+# we are done, so delete SplashBuddy + new user setup script
 rm -rf '/Library/Application Support/SplashBuddy'
 rm /Library/Preferences/io.fti.SplashBuddy.plist
 rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
