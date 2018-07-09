@@ -67,15 +67,15 @@ echo "Configuring user Dock..." >> /var/log/jamf.log
 jamf policy -event DEPDock
 echo "==================================================================================" >> /var/log/jamf.log
 
+# Opening Safari to Okta firstrun page
+jamf policy -event Okta
+
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Creating Staff High Sierra token..." >> /var/log/jamf.log
 jamf policy -event configstaffhighsierra
 jamf recon
 echo "==================================================================================" >> /var/log/jamf.log
-
-# Opening Chrome to Okta firstrun page
-jamf policy Okta
 
 # Quit SplashBuddy if still running
 if [[ $(pgrep SplashBuddy) ]]; then
