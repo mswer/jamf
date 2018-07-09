@@ -35,11 +35,6 @@ echo "Creating sucadmin..." >> /var/log/jamf.log
 jamf policy -event DEPMakeSucadmin
 echo "==================================================================================" >> /var/log/jamf.log
 
-echo "==================================================================================" >> /var/log/jamf.log
-echo "Opening Safari for later password reset Okta" >> /var/log/jamf.log
-su $loggedInUser -c 'open -a /Applications/Safari.app'
-echo "==================================================================================" >> /var/log/jamf.log
-
 # Start basic device setup
 # This policy runs the following triggers for the following effects:
 # wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), UptimeReminder (installs
@@ -53,7 +48,7 @@ echo "==========================================================================
 
 # Opening Safari to Okta for password reset
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Ok, time for Okta password reset now..." >> /var/log/jamf.log
+echo "Opening Safari to Okta"
 jamf policy -event Okta
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -121,7 +116,7 @@ echo "==========================================================================
 
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
+echo "Verifying app installs and creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
 jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -129,12 +124,6 @@ echo "==========================================================================
 if [[ $(pgrep SplashBuddy) ]]; then
 	pkill SplashBuddy
 fi
-
-# we are done, so delete SplashBuddy + new user setup script
-echo "Deleting SplashBuddy files..." >> /var/log/jamf.log
-rm -rf '/Library/Application Support/SplashBuddy'
-rm /Library/Preferences/io.fti.SplashBuddy.plist
-rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 
 # Script prompting user to restart if Okta password reset is complete
 
