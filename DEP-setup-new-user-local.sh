@@ -9,18 +9,11 @@ loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyCons
 # open SplashBuddy app
 su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
 
-# Basic user + admin OS settings
-jamf policy -event wallpaper
-jamf policy -event EULA
-jamf policy -event UptimeReminder
-
-# Enable remote management, root, and firmware password
-jamf policy -event EnableRemoteMgmt
-jamf policy -event enableroot
-jamf policy -event PI_setfirmware
-
-# Setting Computername
+# Setting ComputerName
 jamf setComputerName -name $system_serial
+
+# Basic user + admin OS settings
+jamf policy -event SystemSettings
 
 # Installing Apple Enterprise Connect
 jamf policy -event EnterpriseConnect
