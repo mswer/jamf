@@ -46,6 +46,12 @@ echo "Installing Apple Enterprise Connect..." >> /var/log/jamf.log
 jamf policy -event EnterpriseConnect
 echo "==================================================================================" >> /var/log/jamf.log
 
+# Installing Apple Enterprise Connect
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Installing SonicWall Mobile Connect (hopefully VPP overwrites)..." >> /var/log/jamf.log
+jamf policy -event SonicWall
+echo "==================================================================================" >> /var/log/jamf.log
+
 # Installing Google Chrome, enabling auto-updates, and setting as default browser
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing current version of Google Chrome and setting as the default browser..." >> /var/log/jamf.log
@@ -85,8 +91,9 @@ echo "==========================================================================
 
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Creating Staff High Sierra token..." >> /var/log/jamf.log
-jamf policy -event configstaffhighsierra
+echo "Verifying app installs and creating Staff High Sierra token and..." >> /var/log/jamf.log
+sh /usr/local/bin/jss/DEP-install-verification.sh
+jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Quit SplashBuddy if still running
@@ -94,17 +101,15 @@ if [[ $(pgrep SplashBuddy) ]]; then
 	pkill SplashBuddy
 fi
 
-# Verifying app installations and running recon
-sh /usr/local/bin/jss/DEP-install-verification.sh
-jamf recon
-
 # we are done, so delete SplashBuddy + new user setup script
 rm -rf '/Library/Application Support/SplashBuddy'
 rm /Library/Preferences/io.fti.SplashBuddy.plist
 rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 rm /usr/local/bin/jss/DEP-setup-new-user.sh
 rm /usr/local/bin/jss/DEP-start-setup.sh
+rm /usr/local/bin/jss/DEP-install-verification.sh
 
-
+# Telling user device setup is complete
+sh /usr/local/bin/jss/DEP-setup-complete.sh
 
 exit 0
