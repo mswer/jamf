@@ -8,8 +8,6 @@ user_name=`id -un $user_id`
 
 # open SplashBuddy app
 su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
-sleep 3
-su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
 
 # Setting ComputerName
 echo "==================================================================================" >> /var/log/jamf.log
@@ -29,7 +27,8 @@ echo "==========================================================================
 # (sets firmware password), EnableLocation (enables location services), SetTimeServer
 # (sets 3 NTP time servers), sucadminprofile (sets sucadmin profile picture)
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Running SA device customization policies..." >> /var/log/jamf.log
+echo "Opening Safari to Okta & installed SA device customization policies..." >> /var/log/jamf.log
+osascript -e 'Tell app "Safari" to open location "https://successacademies.okta.com"'
 jamf policy -event SystemSettings
 echo "==================================================================================" >> /var/log/jamf.log
 
