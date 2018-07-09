@@ -6,6 +6,9 @@ loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyCons
 user_id=`id -u`
 user_name=`id -un $user_id`
 
+# open SplashBuddy app
+su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
+
 # Setting ComputerName
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Setting computer name to serial number..." >> /var/log/jamf.log
