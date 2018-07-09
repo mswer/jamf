@@ -75,7 +75,7 @@ jamf recon
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Opening Chrome to Okta firstrun page
-jamf policy ChromeFirstrun
+jamf policy Okta
 
 # Quit SplashBuddy if still running
 if [[ $(pgrep SplashBuddy) ]]; then
