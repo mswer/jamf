@@ -15,9 +15,19 @@ echo "Setting computer name to serial number..." >> /var/log/jamf.log
 jamf setComputerName -name $system_serial
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Check to confirm current user is not the setup user, then start basic user + admin OS settings
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Running JSS script DEP-Basic-Settings to trigger sub-policies..." >> /var/log/jamf.log
+echo "Creating sucadmin..." >> /var/log/jamf.log
+jamf policy -event DEPMakeSucadmin
+echo "==================================================================================" >> /var/log/jamf.log
+
+# Start basic device setup
+# This policy runs the following triggers for the following effects:
+# wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), UptimeReminder (installs
+# uptime reminder components), EnableRemoteMGMTDEP (enables ARD/SSH for sucadmin, PI_setfirmware
+# (sets firmware password), EnableLocation (enables location services), SetTimeServer
+# (sets 3 NTP time servers), sucadminprofile (sets sucadmin profile picture)
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Running SA device customization policies..." >> /var/log/jamf.log
 jamf policy -event SystemSettings
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -25,7 +35,10 @@ echo "==========================================================================
 jamf policy -event Okta
 
 # Finder FUT policies
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Installing Finder FUT policies - will not be shown until restart..." >> /var/log/jamf.log
 jamf policy -event FinderDEP
+echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Apple Enterprise Connect
 echo "==================================================================================" >> /var/log/jamf.log
@@ -73,7 +86,7 @@ echo "==========================================================================
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Creating Staff High Sierra token..." >> /var/log/jamf.log
-jamf policy -event DEPconfigstaffhighsierra
+jamf policy -event configstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Quit SplashBuddy if still running
@@ -81,13 +94,17 @@ if [[ $(pgrep SplashBuddy) ]]; then
 	pkill SplashBuddy
 fi
 
+# Verifying app installations and running recon
+sh /usr/local/bin/jss/DEP-install-verification.sh
+jamf recon
+
 # we are done, so delete SplashBuddy + new user setup script
 rm -rf '/Library/Application Support/SplashBuddy'
 rm /Library/Preferences/io.fti.SplashBuddy.plist
 rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
-rm /usr/local/bin/jss/setup-new-user.sh
+rm /usr/local/bin/jss/DEP-setup-new-user.sh
+rm /usr/local/bin/jss/DEP-start-setup.sh
 
-# Installing app verifications
-sh /usr/local/bin/jss/DEP-install-verification.sh
+
 
 exit 0
