@@ -30,10 +30,11 @@ echo "Installing Apple Enterprise Connect..." >> /var/log/jamf.log
 jamf policy -event EnterpriseConnect
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Installing Google Chrome, enabling auto-updates
+# Installing Google Chrome, enabling auto-updates, and setting as default browser
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing the current version of Google Chrome..." >> /var/log/jamf.log
 jamf policy -event ChromeCurrent
+jamf policy ChromeDefault
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Flash and Java
@@ -56,7 +57,14 @@ echo "==========================================================================
 
 # Installing BlueJeans
 echo "==================================================================================" >> /var/log/jamf.log
+echo "Installing BlueJeans Client..." >> /var/log/jamf.log
 jamf policy -event BlueJeans
+echo "==================================================================================" >> /var/log/jamf.log
+
+# Setting up user Dock
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Configuring user Dock..." >> /var/log/jamf.log
+jamf policy -event DEPDock
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Creating 'Last Imaged' and 'Image Config' tokens
@@ -66,10 +74,8 @@ jamf policy -event configstaffhighsierra
 jamf recon
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Opening SA Okta in Safari, then set Chrome as default browser
-open -a "Safari" https://successacademies.okta.com
-sleep 1
-jamf policy ChromeDefault
+# Opening Chrome to Okta firstrun page
+jamf policy ChromeFirstrun
 
 # Quit SplashBuddy if still running
 if [[ $(pgrep SplashBuddy) ]]; then
@@ -81,5 +87,6 @@ rm -rf '/Library/Application Support/SplashBuddy'
 rm /Library/Preferences/io.fti.SplashBuddy.plist
 rm /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 rm /usr/local/bin/jss/setup-new-user.sh
+sh /usr/local/bin/jss/DEP-install-verification.sh
 
 exit 0
