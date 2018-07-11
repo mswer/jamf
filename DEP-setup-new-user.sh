@@ -47,7 +47,7 @@ echo "==========================================================================
 
 # Opening Safari to Okta for password reset
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Opening Safari to Okta"
+echo "Opening Safari to Okta" >> /var/log/jamf.log
 jamf policy -event Okta
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -63,7 +63,7 @@ echo "Installing Apple Enterprise Connect..." >> /var/log/jamf.log
 jamf policy -event EnterpriseConnect
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Installing SonicWall Mobile Connect from JSS if missing from app store
+# Installing SonicWall Mobile Connect from JSS if missing from App Store
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Checking if SonicWall installed from the App Store..." >> /var/log/jamf.log
 	if [ ! -d "/Applications/SonicWall Mobile Connect.app" ];
@@ -85,7 +85,7 @@ echo "==========================================================================
 
 # Installing Flash and Java
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing Java and Flash..." >> /var/log/jamf.log
+echo "Installing Flash..." >> /var/log/jamf.log
 jamf policy -event BrowserPlugins
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -97,7 +97,7 @@ echo "==========================================================================
 
 # Preparing Share Drive
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing Shared Drive dependencies..." >> /var/log/jamf.log
+echo "Installing Shared Drive dependencies (Zidget+ShadowConnect)..." >> /var/log/jamf.log
 jamf policy -event SharedDrive
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -115,7 +115,7 @@ echo "==========================================================================
 
 # Creating 'Last Imaged' and 'Image Config' tokens
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Verifying app installs and creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
+echo "Creating Staff High Sierra token and running recon..." >> /var/log/jamf.log
 jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -124,7 +124,7 @@ if [[ $(pgrep SplashBuddy) ]]; then
 	pkill SplashBuddy
 fi
 
-# Script prompting user to restart if Okta password reset is complete
+# Alert prompting user to restart if Okta password reset is complete
 
 /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType hud -title "Alert" -heading "Device Setup Complete ✅" -description "Your computer has been successfully prepared! To finalize setup, please restart now.
 
@@ -137,11 +137,7 @@ Select 'Restart Later' to complete device setup later."  -button1 "Restart now" 
 if [ $? -eq 0 ]
 then
 	echo "User indicated Okta setup complete. Rebooting..." >> /var/log/jamf.log
-    if [[ $(pgrep Safari) ]]; then
-		pkill Safari
-	fi
-	sleep 1
-	sudo jamf policy -event DEPReboot
+	jamf policy -event DEPReboot
 else
 	echo "User opted out of new device setup reboot. Exiting..." >> /var/log/jamf.log
 fi
