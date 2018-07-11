@@ -37,10 +37,9 @@ echo "==========================================================================
 
 # Start basic device setup
 # This policy runs the following triggers for the following effects:
-# wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), UptimeReminder (installs
-# uptime reminder components), EnableRemoteMGMTDEP (enables ARD/SSH for sucadmin, PI_setfirmware
-# (sets firmware password), EnableLocation (enables location services), SetTimeServer
-# (sets 3 NTP time servers), sucadminprofile (sets sucadmin profile picture)
+# wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), EnableRemoteMGMTDEP
+# (enables ARD/SSH for sucadmin, PI_setfirmware (sets firmware password), EnableLocation
+# (enables location services), SetTimeServer (sets 3 NTP time servers)
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Running SA device customization policies..." >> /var/log/jamf.log
 jamf policy -event SystemSettings
@@ -64,11 +63,11 @@ echo "Installing Apple Enterprise Connect..." >> /var/log/jamf.log
 jamf policy -event EnterpriseConnect
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Installing Apple Enterprise Connect
+# Installing SonicWall Mobile Connect from JSS if missing from app store
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Checking if SonicWall installed from the App Store..." >> /var/log/jamf.log
-if [ ! -d /Applications/SonicWall\ Mobile\ Connect.app ];
-	then echo "App Store failed. Installing from JSS..." && jamf policy -event SonicWall 
+	if [ ! -d "/Applications/SonicWall Mobile Connect.app" ];
+		then echo "App Store failed. Installing from JSS..." && jamf policy -event SonicWall 
 	else
 		echo "Installing SonicWall_Mobile_Connect_VPP-v1.pkg" >> /var/log/jamf.log
 		echo "Actually, SonicWall was already installed." >> /var/log/jamf.log
