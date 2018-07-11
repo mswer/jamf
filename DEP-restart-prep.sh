@@ -4,11 +4,13 @@
 # script to close programs likely to be open 
 
 # Quit Safari if still running
-if [[ $(pgrep 'Safari') ]]; then
-	pkill 'Safari'
+if pgrep -x "Safari" >> /dev/null
+	then pkill "Safari"
 fi
 
 # Quit Self Service if still running
-if [[ $(pgrep 'Self Service') ]]; then
-	pkill 'Self Service'
+if pgrep -x "Self Service" >> /dev/null
+	then pkill "Self Service"
 fi
+
+exit 0
