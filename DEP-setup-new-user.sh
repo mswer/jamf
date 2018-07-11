@@ -120,8 +120,8 @@ jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Quit SplashBuddy if still running
-if [[ $(pgrep SplashBuddy) ]]; then
-	pkill SplashBuddy
+if pgrep -x "SplashBuddy" >> /dev/null
+	then pkill "SplashBuddy"
 fi
 
 # Alert prompting user to restart if Okta password reset is complete
