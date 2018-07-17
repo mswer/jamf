@@ -7,14 +7,16 @@ user_id=`id -u`
 user_name=`id -un $user_id`
 baduser1="_mbsetupuser"
 baduser2="loginwindow"
+SetupScript="/Library/Application Support/JAMF/tmp/DEP Setup New User.sh"
 
 # Don't start setting the device up until there's a user logged in
-if [ $loggedInUser == "$baduser1" ] || [ $loggedInUser == "$baduser2" ]
+if [ $loggedInUser == "$baduser1" ] || [ $loggedInUser == "$baduser2" ];
 	then
 		while [ $loggedInUser == $baduser1 ] || [ $loggedInUser == $baduser2 ] 
 		do
 			echo "User not logged in yet. Waiting..." >> /var/log/jamf.log
 			sleep 5;
+            exec sh $SetupScript
 			done
 			echo "User $loggedInUser is finally logged in. Starting device setup..." >> /var/log/jamf.log
 	else
@@ -26,7 +28,8 @@ su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBudd
 
 # Setting ComputerName
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Setting computer name to serial number..." >> /var/log/jamf.log
+echo "Setting computer name to serial number and SA wallpaper..." >> /var/log/jamf.log
+jamf policy -event wallpaper
 jamf setComputerName -name $system_serial
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -80,7 +83,7 @@ echo "==========================================================================
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing current version of Google Chrome and setting as the default browser..." >> /var/log/jamf.log
 jamf policy -event ChromeCurrent
-jamf policy -event ChromeDefault
+# jamf policy -event ChromeDefault - commenting out bc script breaks Dock. May be fixed later.
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Flash and Java
@@ -122,9 +125,10 @@ echo "==========================================================================
 # Unload + delete SplashBuddy LaunchAgent, Quit SplashBuddy if still running
 
 if pgrep -x "SplashBuddy" >> /dev/null
-	launchctl unload /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
-    rm -rf /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
-	then pkill "SplashBuddy"
+	then
+    	pkill "SplashBuddy"
+	    launchctl unload /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
+    	rm -rf /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 fi
 
 # Alert prompting user to restart if Okta password reset is complete
