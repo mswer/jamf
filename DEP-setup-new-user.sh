@@ -35,14 +35,10 @@ echo "Creating sucadmin..." >> /var/log/jamf.log
 jamf policy -event DEPMakeSucadmin
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Start basic device setup
-# This policy runs the following triggers for the following effects:
-# wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), EnableRemoteMGMTDEP
-# (enables ARD/SSH for sucadmin, PI_setfirmware (sets firmware password), EnableLocation
-# (enables location services), SetTimeServer (sets 3 NTP time servers)
+# Finder FUT policies
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Running SA device customization policies..." >> /var/log/jamf.log
-jamf policy -event SystemSettings
+echo "Installing Finder FUT policies - will not be shown until restart..." >> /var/log/jamf.log
+jamf policy -event FinderDEP
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Opening Safari to Okta for password reset
@@ -51,10 +47,14 @@ echo "Opening Safari to Okta" >> /var/log/jamf.log
 jamf policy -event Okta
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Finder FUT policies
+# Start basic device setup
+# This policy runs the following triggers for the following effects:
+# wallpaper (sets SA wallpaper), EULA (installs loginwindow EULA), EnableRemoteMGMTDEP
+# (enables ARD/SSH for sucadmin, PI_setfirmware (sets firmware password), EnableLocation
+# (enables location services), SetTimeServer (sets 3 NTP time servers)
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing Finder FUT policies - will not be shown until restart..." >> /var/log/jamf.log
-jamf policy -event FinderDEP
+echo "Running SA device customization policies..." >> /var/log/jamf.log
+jamf policy -event SystemSettings
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Apple Enterprise Connect
