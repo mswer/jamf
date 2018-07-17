@@ -24,7 +24,7 @@ if [ $loggedInUser == "$baduser1" ] || [ $loggedInUser == "$baduser2" ];
 	fi
 
 # open SplashBuddy app
-su $loggedInUser -c 'open -a /Library/Application Support/SplashBuddy/SplashBuddy.app'
+su $loggedInUser -c 'open -a /Library/Application\ Support/SplashBuddy/SplashBuddy.app'
 
 # Setting ComputerName
 echo "==================================================================================" >> /var/log/jamf.log
