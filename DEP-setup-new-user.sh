@@ -119,10 +119,11 @@ echo "Creating Staff High Sierra token and running recon..." >> /var/log/jamf.lo
 jamf policy -event DEPconfigstaffhighsierra
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Unload SplashBuddy LaunchAgent, Quit SplashBuddy if still running
+# Unload + delete SplashBuddy LaunchAgent, Quit SplashBuddy if still running
 
 if pgrep -x "SplashBuddy" >> /dev/null
 	launchctl unload /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
+    rm -rf /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 	then pkill "SplashBuddy"
 fi
 
