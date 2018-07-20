@@ -105,10 +105,10 @@ jamf policy -event SharedDrive
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing BlueJeans
-echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing BlueJeans Client..." >> /var/log/jamf.log
-jamf policy -event BlueJeans
-echo "==================================================================================" >> /var/log/jamf.log
+#echo "==================================================================================" >> /var/log/jamf.log
+#echo "Installing BlueJeans Client..." >> /var/log/jamf.log
+#jamf policy -event BlueJeans
+#echo "==================================================================================" >> /var/log/jamf.log
 
 # Setting up user Dock
 echo "==================================================================================" >> /var/log/jamf.log
@@ -126,8 +126,8 @@ echo "==========================================================================
 
 if pgrep -x "SplashBuddy" >> /dev/null
 	then
-    	pkill "SplashBuddy"
 	    launchctl unload /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
+		pkill "SplashBuddy"
     	rm -rf /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 fi
 
