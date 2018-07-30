@@ -127,7 +127,9 @@ echo "==========================================================================
 if pgrep -x "SplashBuddy" >> /dev/null
 	then
 	    launchctl unload /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
-		pkill "SplashBuddy"
+        launchctl unload io.fti.SplashBuddy.launch
+        rm -rf /Library/Application\ Support/SplashBuddy
+        pkill "SplashBuddy"
     	rm -rf /Library/LaunchAgents/io.fti.SplashBuddy.launch.plist
 fi
 
