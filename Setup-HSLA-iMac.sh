@@ -9,7 +9,7 @@ su $loggedInUser -c 'open /var/log/jamf.log'
 
 # Setting ComputerName
 echo "==================================================================================" >> /var/log/jamf.log
-echo "Setting computer name to serial number and SA wallpaper..." >> /var/log/jamf.log
+echo "Setting computer name to serial number..." >> /var/log/jamf.log
 jamf setComputerName -name $system_serial-HSL
 echo "==================================================================================" >> /var/log/jamf.log
 
@@ -23,7 +23,7 @@ echo "==========================================================================
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Running SA device customization+management policies..." >> /var/log/jamf.log
 jamf policy -event EnableRemoteMgmtDEP
-jamf policy -event PI_setfirmware
+jamf policy -event lab-firmware
 jamf policy -event SetTimeServer
 jamf policy -event EnableLocation
 jamf policy -event lab-wallpaper
@@ -59,7 +59,7 @@ echo "Installing current version of VLC" >> /var/log/jamf.log
 jamf policy -event VLC-current
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Installing Flash
+# Installing Flash, Java, and JRE + JDK
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing current versions Flash, Java, and JRE + JDK..." >> /var/log/jamf.log
 jamf policy -event LabPlugins
