@@ -3,11 +3,30 @@
 # Define script variables
 system_serial=`system_profiler SPHardwareDataType | awk '/Serial/ {print $4}'`
 loggedInUser=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+diskFormat=`diskutil info 'Macintosh HD' | grep "File System Personality:" | cut -c 30-50`
+correctFormat="Journaled HFS+"
+
 
 # Open Jamf Log so setup can be monitored
 su $loggedInUser -c 'open /var/log/jamf.log'
 
-# Setting ComputerName
+# Deleting apfsconvert utility
+echo "==================================================================================" >> /var/log/jamf.log
+echo "Confirming Disk was converted to HFS+, deleting utility if so..." >> /var/log/jamf.log
+if [ $diskFormat == "$correctFormat" ];
+	then
+    	echo "Macintosh HD is formatted as $diskFormat. Deleting convert utility and proceeding with setup..." >> /var/log/jamf.log
+        rm -rf /Applications/apfsconvert.app
+	else
+		echo "Macintosh HD is formatted as $diskFormat. Installing and launching APFS convert utility..." >> /var/log/jamf.log
+		echo "Macintosh HD must be HFS+ before running setup script. Please convert, then run 'Setup HSLA Lab iMac' policy again..." >> /var/log/jamf.log
+		jamf policy -event apfsconvert
+        exit 1
+	fi
+echo "==================================================================================" >> /var/log/jamf.log
+
+
+# Setting Computer Name
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Setting computer name to serial number..." >> /var/log/jamf.log
 jamf setComputerName -name $system_serial-HSL
