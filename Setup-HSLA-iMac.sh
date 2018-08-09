@@ -19,7 +19,7 @@ if [ $diskFormat == "$correctFormat" ];
         rm -rf /Applications/apfsconvert.app
 	else
 		echo "Macintosh HD is formatted as $diskFormat. Installing and launching APFS convert utility..." >> /var/log/jamf.log
-		echo "Macintosh HD must be HFS+ before running setup script. Please convert, then run 'Setup HSLA Lab iMac' policy again..." >> /var/log/jamf.log
+		echo "Macintosh HD must be HFS+ before running setup script. Please convert, then run 'Setup HSLA Lab iMac' policy again :)" >> /var/log/jamf.log
 		jamf policy -event apfsconvert
         exit 1
 	fi
