@@ -25,11 +25,10 @@ su $loggedInUser -c 'open /var/log/jamf.log'
 #	fi
 #echo "==================================================================================" >> /var/log/jamf.log
 
-
 # Setting Computer Name
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Setting computer name to serial number..." >> /var/log/jamf.log
-jamf setComputerName -name $system_serial-HSL
+jamf setComputerName -name $system_serial-VM-HSLA
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Finder FUT policies
@@ -42,7 +41,6 @@ echo "==========================================================================
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Running SA device customization+management policies..." >> /var/log/jamf.log
 jamf policy -event EnableRemoteMgmtDEP
-#jamf policy -event lab-firmware
 jamf policy -event SetTimeServer
 jamf policy -event EnableLocation
 jamf policy -event lab-wallpaper
@@ -111,7 +109,7 @@ Select 'Restart Later' to complete device setup later."  -button1 "Restart now" 
 if [ $? -eq 0 ]
 then
 	echo "User indicated Okta setup complete. Rebooting..." >> /var/log/jamf.log
-	jamf policy -event DEPReboot
+	jamf policy -event LabReboot
 else
 	echo "User opted out of new device setup reboot. Exiting..." >> /var/log/jamf.log
 fi
