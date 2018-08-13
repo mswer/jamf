@@ -51,7 +51,7 @@ echo "==========================================================================
 # Installing Google Chrome, enabling auto-updates
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing current version of Google Chrome..." >> /var/log/jamf.log
-#jamf policy -event ChromeCurrent
+jamf policy -event ChromeCurrent
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Adobe CC
