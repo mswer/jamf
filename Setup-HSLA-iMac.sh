@@ -11,19 +11,19 @@ correctFormat="Journaled HFS+"
 su $loggedInUser -c 'open /var/log/jamf.log'
 
 # Deleting apfsconvert utility
-echo "==================================================================================" >> /var/log/jamf.log
-echo "Confirming Disk was converted to HFS+, deleting utility if so..." >> /var/log/jamf.log
-if [ $diskFormat == "$correctFormat" ];
-	then
-    	echo "Macintosh HD is formatted as $diskFormat. Deleting convert utility and proceeding with setup..." >> /var/log/jamf.log
-        rm -rf /Applications/apfsconvert.app
-	else
-		echo "Macintosh HD is formatted as $diskFormat. Installing and launching APFS convert utility..." >> /var/log/jamf.log
-		echo "Macintosh HD must be HFS+ before running setup script. Please convert, then run 'Setup HSLA Lab iMac' policy again :)" >> /var/log/jamf.log
-		jamf policy -event apfsconvert
-        exit 1
-	fi
-echo "==================================================================================" >> /var/log/jamf.log
+#echo "==================================================================================" >> /var/log/jamf.log
+#echo "Confirming Disk was converted to HFS+, deleting utility if so..." >> /var/log/jamf.log
+#if [ $diskFormat == "$correctFormat" ];
+#	then
+#    	echo "Macintosh HD is formatted as $diskFormat. Deleting convert utility and proceeding with setup..." >> /var/log/jamf.log
+#        rm -rf /Applications/apfsconvert.app
+#	else
+#		echo "Macintosh HD is formatted as $diskFormat. Installing and launching APFS convert utility..." >> /var/log/jamf.log
+#		echo "Macintosh HD must be HFS+ before running setup script. Please convert, then run 'Setup HSLA Lab iMac' policy again :)" >> /var/log/jamf.log
+#		jamf policy -event apfsconvert
+#        exit 1
+#	fi
+#echo "==================================================================================" >> /var/log/jamf.log
 
 
 # Setting Computer Name
@@ -42,7 +42,7 @@ echo "==========================================================================
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Running SA device customization+management policies..." >> /var/log/jamf.log
 jamf policy -event EnableRemoteMgmtDEP
-jamf policy -event lab-firmware
+#jamf policy -event lab-firmware
 jamf policy -event SetTimeServer
 jamf policy -event EnableLocation
 jamf policy -event lab-wallpaper
@@ -51,7 +51,7 @@ echo "==========================================================================
 # Installing Google Chrome, enabling auto-updates
 echo "==================================================================================" >> /var/log/jamf.log
 echo "Installing current version of Google Chrome..." >> /var/log/jamf.log
-jamf policy -event ChromeCurrent
+#jamf policy -event ChromeCurrent
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Adobe CC
@@ -60,11 +60,11 @@ echo "Installing Adobe CC. Please wait, 11gb file..." >> /var/log/jamf.log
 jamf policy -event AdobeCC
 echo "==================================================================================" >> /var/log/jamf.log
 
-# Installing VMWare Fusion
-echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing VMWare Fusion + Win10 VM with SolidWorks..." >> /var/log/jamf.log
-jamf policy -event LabVMWare
-echo "==================================================================================" >> /var/log/jamf.log
+## Installing VMWare Fusion
+#echo "==================================================================================" >> /var/log/jamf.log
+#echo "Installing VMWare Fusion + Win10 VM with SolidWorks..." >> /var/log/jamf.log
+#jamf policy -event LabVMWare
+#echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Office 2011 + updates, deleting Outlook
 echo "==================================================================================" >> /var/log/jamf.log
@@ -97,10 +97,10 @@ jamf policy -event config-hslamaclab
 echo "==================================================================================" >> /var/log/jamf.log
 
 # Installing Deep Freeze
-echo "==================================================================================" >> /var/log/jamf.log
-echo "Installing Deep Freeze. Config will be frozen following 2 reboots..." >> /var/log/jamf.log
-jamf policy -event DeepFreeze
-echo "==================================================================================" >> /var/log/jamf.log
+#echo "==================================================================================" >> /var/log/jamf.log
+#echo "Installing Deep Freeze. Config will be frozen following 2 reboots..." >> /var/log/jamf.log
+#jamf policy -event DeepFreeze
+#echo "==================================================================================" >> /var/log/jamf.log
 
 /Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType hud -title "Alert" -heading "Device Setup Complete ✅" -description "Your computer has been successfully prepared! To finalize setup, please restart now. Following restart, please sign in, and reboot again to freeze configuration.
 
