@@ -9,7 +9,7 @@
 #----------------------------------------------------------------------------------------
 
 # Queries VLC's website for one version behind the latest.
-vlc_version=`/usr/bin/curl https://mirror.wdc1.us.leaseweb.net/videolan/vlc/last/macosx/ | grep vlc- | cut -d \" -f 2 | awk '{printf("%s",$0);}' | cut -d . -f 1-5 | cut -d "/" -f 2`
+vlc_version=`/usr/bin/curl https://mirror.wdc1.us.leaseweb.net/videolan/vlc/last/macosx/ | grep vlc- | cut -d \" -f 2 | awk '{printf("%s",$0);}' | cut -d . -f 1-3 | cut -d "/" -f 2`
 
 echo $vlc_version
 
