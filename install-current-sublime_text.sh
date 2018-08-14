@@ -8,12 +8,8 @@
 # Queries VLC's website for one version behind the latest.
 sublime_version=`/usr/bin/curl https://www.sublimetext.com/3 | grep "Sublime Text Build" | cut -d / -f 4 |  cut -d "\"" -f 1 | grep ".dmg"`
 
-echo $sublime_version
-
 # Creates the download url based on the version pulled from the website
 fileURL="https://download.sublimetext.com/$sublime_version"
-
-echo $fileURL
 
 sublime_dmg="/tmp/sublime.dmg" 
 
