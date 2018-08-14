@@ -5,7 +5,7 @@
 # Updated for Sublime Text 3 by mw 08-14-18
 #----------------------------------------------------------------------------------------
 
-# Queries Sublime Text's website for one version behind the latest.
+# Queries website for current build of Sublime Text
 sublime_version=`/usr/bin/curl https://www.sublimetext.com/3 | grep "Sublime Text Build" | cut -d / -f 4 |  cut -d "\"" -f 1 | grep ".dmg"`
 
 # Creates the download url based on the version pulled from the website
