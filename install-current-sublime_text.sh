@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #----------------------------------------------------------------------------------------
-# base on https://www.jamf.com/jamf-nation/third-party-products/files/930/update-install-vlc
+# based on https://www.jamf.com/jamf-nation/third-party-products/files/930/update-install-vlc
 # Updated for Sublime Text 3 by mw 08-14-18
 #----------------------------------------------------------------------------------------
 
