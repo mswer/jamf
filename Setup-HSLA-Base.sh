@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # THIS IS THE SETUP SCRIPT FOR THE REAL IMAC!
 
 # Define script variables
