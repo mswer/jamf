@@ -36,7 +36,8 @@ if [ "$DN_check" != "" ] && [ "$CurrentNetwork" != "$DesiredNetwork" ] ; then
         echo "Now connected to $DesiredNetwork."  >> /var/log/jamf.log
 		echo "$UndesiredNetwork disconnected and removed from preferred networks. Exiting..." >> /var/log/jamf.log
 	else
-		echo "$DesiredNetwork is either connected already, or not available at this time. Retaining current connection to $CurrentNetwork and exiting..." >> /var/log/jamf.log
+		echo "$DesiredNetwork is either connected already, or not available at this time." >> /var/log/jamf.log
+		echo "Retaining current connection to $CurrentNetwork and exiting..." >> /var/log/jamf.log
 fi
 
 exit 0
