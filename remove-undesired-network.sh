@@ -20,21 +20,19 @@ fi
 
 #Setting script variables
 CurrentNetwork=`networksetup -getairportnetwork $wifi_int | cut -c 24-`
-UndesiredNetwork="$4"
-DesiredNetwork="$5"
-NetworkPassword="$6"
-DN_check=`/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s | grep $5`
+DesiredNetwork="$4"
+NetworkPassword="$5"
+DN_check=`/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s | grep $4`
 
 # Switch connection to desired network (set network name below)
-# Remove undesired network from preferred networks so device does not re-connect
 if [ "$DN_check" != "" ] && [ "$CurrentNetwork" != "$DesiredNetwork" ] ; then
-		echo "$DesiredNetwork is available. Switching connection and removing $UndesiredNetwork..." >> /var/log/jamf.log
+		echo "$DesiredNetwork is available. Switching connection and removing $CurrentNetwork..." >> /var/log/jamf.log
 		networksetup -setairportnetwork "$wifi_int" "$DesiredNetwork" "$NetworkPassword"
 		# Pausing for 10 seconds to give the device time to connect
 		sleep 10
-		networksetup -removepreferredwirelessnetwork "$wifi_int" "$UndesiredNetwork"
+		networksetup -removepreferredwirelessnetwork "$wifi_int" "$CurrentNetwork"
         echo "Now connected to $DesiredNetwork."  >> /var/log/jamf.log
-		echo "$UndesiredNetwork disconnected and removed from preferred networks. Exiting..." >> /var/log/jamf.log
+		echo "$CurrentNetwork disconnected and removed from preferred networks. Exiting..." >> /var/log/jamf.log
 	else
 		echo "$DesiredNetwork is either connected already, or not available at this time." >> /var/log/jamf.log
 		echo "Retaining current connection to $CurrentNetwork and exiting..." >> /var/log/jamf.log
