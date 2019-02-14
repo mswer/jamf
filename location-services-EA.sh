@@ -2,7 +2,7 @@
 
 # mw 02-11-19
 # for MacOS 10.10 and below, the device UUID must be included in plist name when running defaults read to get the boolean
-# for MacOS 10.11+, the device UUID *cannot* be included in the please name when running defaults read to get the boolean
+# for MacOS 10.11+, the device UUID *cannot* be included in the plist name when running defaults read to get the boolean
 
 #Variables
 uuid=$(system_profiler SPHardwareDataType | grep "Hardware UUID" | awk '{print $3}')
