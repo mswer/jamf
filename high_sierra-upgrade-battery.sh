@@ -141,7 +141,7 @@ fi
 
 insufficient_free_space_for_install_dialog="Your boot drive must have $needed_free_space gigabytes of free space available in order to install $app_name. It currently has $available_free_space gigabytes free. Please free up space and try again. If you need assistance, please contact $it_contact."
 adequate_free_space_for_install_dialog="$app_name is currently downloading. The installation process will begin once the download is complete. Please close all applications."
-insufficient_power="The computer is not plugged into a power source or the battery is insufficiently charged. Please plug it into a power source or charge the battery above 80% and start the installation again."
+insufficient_power="The computer is not plugged into a power source or the battery is insufficiently charged. Please plug it into a power source or charge the battery above 75% and start the installation again."
 inprogress="The upgrade to $app_name is now in progress.  Quit all your applications. The computer will restart automatically. You can step away for about $time minutes. Do not shutdown or unplug from power during this process."
 disable_icloud="iCloud Drive enabled on this computer and the installation cannot continue. Please disable it by going to the Apple menu > System Preferences > iCloud and unchecking iCloud Drive. Once it’s disabled, please start the installation again. You can re-enable iCloud Drive after the upgrade is completed. If you need assistance, please contact $it_contact."
 download_error="The download of macOS has failed. Installation will not proceed. Please contact $it_contact."
@@ -192,6 +192,8 @@ fi
 
 # Check for Power Source
 if [[ "$power_source" != *"AC Power"* ]] && [[ "$BattUpgrade" == "NO" ]]; then
+	/bin/echo "Power source is "$power_source.""
+	/bin/echo "Could this device upgrade from battery power? "$BattUpgrade""
 	/bin/echo "$insufficient_power"
 	"$jamfHelper" -windowType utility -icon "$lowbatteryicon" -heading "Connect to Power Source" -description "$insufficient_power" -button1 "Exit" -defaultButton 1 &
 	exit 4
@@ -355,7 +357,7 @@ downloadOSInstaller (){
 		JHPID=$(/bin/echo "$!")
 		
 		"$jamf" policy -event "$custom_trigger_policy_name" -randomDelaySeconds 0
-		base_os_ver_redownload="$(/usr/libexec/PlistBuddy -c "print :'System Image Info':version" "$mac_os_installer_path"/Contents/SharedSupport/InstallInfo.plist)"
+		base_os_ver_redownload="10.13.6"
 		/bin/kill -s KILL "$JHPID" > /dev/null 1>&2
 	else
 		/bin/echo "Warning: Custom Trigger field to download macOS installer is empty. Cannot download macOS installer. Please ensure macOS installer app is already installed on the client."
